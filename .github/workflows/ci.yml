@@ -17,6 +17,9 @@ jobs:
     - name: Install Dependencies
       run: sudo apt-get install -y build-essential ffmpeg wget
 
+    - name: Create Tests Directory
+      run: mkdir -p tests  # Create the tests directory if it doesn't exist
+
     - name: Download Sample Video
       run: wget -O tests/sample_video.mp4 https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4
 
