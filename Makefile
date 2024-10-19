@@ -3,25 +3,25 @@
 # 'make clean'  removes all .o and executable files
 #
 
-# define the Cpp compiler to use
+# Define the C++ compiler to use
 CXX = g++
 
-# define any compile-time flags
+# Define any compile-time flags	
 CXXFLAGS = -std=c++17 -Wall -Wextra -g
 
-# define output directory
+# Define output directory
 OUTPUT = output
 
-# define source directory
+# Define source directory
 SRC = src
 
-# define the main executable name
+# Define the main executable name
 MAIN = davinci-convert
 
-# define the C source files
+# Define the C source files
 SOURCES = $(wildcard $(SRC)/*.cpp)
 
-# define the C object files
+# Define the C object files
 OBJECTS = $(SOURCES:.cpp=.o)
 
 OUTPUTMAIN = $(OUTPUT)/$(MAIN)

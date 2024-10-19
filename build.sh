@@ -93,4 +93,4 @@ echo "Installing the application..."
 sudo make install
 
 # Inform the user about the executable
-echo "You can run the application using davinci-convert"
+echo "You can run the application using 'davinci-convert'"
