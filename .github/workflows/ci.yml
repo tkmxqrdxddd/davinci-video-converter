@@ -1,0 +1,30 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install Dependencies
+      run: sudo apt-get install -y build-essential ffmpeg
+
+    - name: Build
+      run: make
+
+    - name: Run Tests
+      run: make test
+
+    - name: Run
+      run: |
+        echo "Running the Video Converter..."
+        ./output/VideoConverter
+
