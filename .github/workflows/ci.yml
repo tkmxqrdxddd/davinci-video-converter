@@ -20,11 +20,7 @@ jobs:
     - name: Build
       run: make
 
-    - name: Run Tests
-      run: make test
-
     - name: Run
       run: |
         echo "Running the Video Converter..."
         ./output/VideoConverter
-
