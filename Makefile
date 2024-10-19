@@ -1,5 +1,5 @@
 #
-# 'make'        build executable file 'VideoConverter'
+# 'make'        build executable file 'davinci-convert'
 # 'make clean'  removes all .o and executable files
 #
 
@@ -16,7 +16,7 @@ OUTPUT = output
 SRC = src
 
 # define the main executable name
-MAIN = VideoConverter
+MAIN = davinci-convert
 
 # define the C source files
 SOURCES = $(wildcard $(SRC)/*.cpp)
@@ -47,3 +47,6 @@ run: all
 	@echo "Running executable: $(OUTPUTMAIN)"
 	./$(OUTPUTMAIN)
 	@echo Executing 'run: all' complete!
+
+install: all
+	install -Dm755 $(OUTPUTMAIN) /usr/bin/davinci-convert
