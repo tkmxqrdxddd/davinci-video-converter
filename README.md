@@ -67,7 +67,7 @@ If you prefer to install manually, follow these steps:
 
 3. Install the application:
    ```bash
-   sudo make install
+   make install
    ```
 
 ## Running the Program
@@ -75,7 +75,7 @@ If you prefer to install manually, follow these steps:
 To run the program, use the following command:
 
 ```bash
-./output/davinci-convert
+davinci-convert
 ```
 
 ### Usage
