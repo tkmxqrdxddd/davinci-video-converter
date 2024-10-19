@@ -40,7 +40,7 @@ void VideoConverter::startConversion(const std::string &inputFile, const std::st
     std::cout << "Starting conversion..." << std::endl;
 
     std::thread([this, inputFile, outputPath]() {
-        std::string command = "ffmpeg -i \"" + inputFile + "\" -c:v dnxhd -profile:v dnxhr_hq -pix_fmt yuv422p -c:a alac \"" + outputPath.string() + "\" 2> ffmpeg_error.log";
+        std::string command = "ffmpeg -i \"" + inputFile + "\" -c:v dnxhd -profile:v dnxhr_hq -pix_fmt yuv422p -c:a alac \"" + outputPath.string() + "\" 2> /dev/null";
         int result = std::system(command.c_str());
         conversionInProgress = false;
 
