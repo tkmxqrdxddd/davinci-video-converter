@@ -21,7 +21,7 @@ jobs:
       run: mkdir -p tests  # Create the tests directory if it doesn't exist
 
     - name: Download Sample Video
-      run: wget -O tests/sample_video.mp4 https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4
+      run: wget -O rickroll.mp4 'http://www.youtube.com/get_video?video_id=eBGIQ7ZuuiU&l=210&sk=QHSGy-6-eiJ6h5qtrj1kR2OJanvL6tLlC&fmt_map=&t=OEgsToPDskIjlCX_1shTRBRDv2UQzVb-&hl=en&plid=AAROOIUyvpMFnjvzAAAAoARsYAg&tk=6J3d54cPnMJP7mUN2BtMkd2OmbgxTvB_GPcrV3ckGUbzd7KVMiH1kA%3D%3D&title=Rick Roll'
 
     - name: Build
       run: |
