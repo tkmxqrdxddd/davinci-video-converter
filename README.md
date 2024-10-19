@@ -21,8 +21,8 @@ Before building and running the application, ensure you have the following insta
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/tkmxqrdxddd/DavinciVideoConverter.git
-   cd DavinciVideoConverter
+   git clone (https://github.com/tkmxqrdxddd/davinci-video-converter)
+   cd davinci-video-converter
    ```
 
 2. Run the build script to install dependencies and build the project:
