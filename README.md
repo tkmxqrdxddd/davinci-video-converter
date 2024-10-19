@@ -21,7 +21,7 @@ Before building and running the application, ensure you have the following insta
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/DavinciVideoConverter.git
+   git clone https://github.com/tkmxqrdxddd/DavinciVideoConverter.git
    cd DavinciVideoConverter
    ```
 
