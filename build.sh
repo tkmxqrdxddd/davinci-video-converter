@@ -26,7 +26,7 @@ install_redhat_dependencies() {
 # Function to install dependencies for Arch Linux
 install_arch_dependencies() {
     echo "Installing dependencies for Arch Linux..."
-    sudo pacman -Syu --noconfirm base-devel ffmpeg || {
+    sudo pacman -S --noconfirm base-devel ffmpeg || {
         echo "Failed to install dependencies for Arch Linux."
         exit 1
     }
