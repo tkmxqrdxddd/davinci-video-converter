@@ -90,7 +90,7 @@ fi
 
 # Install the application
 echo "Installing the application..."
-sudo make install
+make install
 
 # Inform the user about the executable
 echo "You can run the application using 'davinci-convert'"
