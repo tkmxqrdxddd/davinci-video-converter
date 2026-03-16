@@ -1,52 +1,38 @@
-#
-# 'make'        build executable file 'davinci-convert'
-# 'make clean'  removes all .o and executable files
-#
-
-# Define the C++ compiler to use
 CXX = g++
+CXXFLAGS = -std=c++17 -Wall -Wextra -O2
+INCLUDES = -Isrc/include
+TARGET = davinci-video-converter
 
-# Define any compile-time flags	
-CXXFLAGS = -std=c++17 -Wall -Wextra -g
+SRCS = src/main.cpp src/parser.cpp src/validator.cpp src/converter.cpp
+OBJS = $(SRCS:.cpp=.o)
 
-# Define output directory
-OUTPUT = output
+all: $(TARGET)
 
-# Define source directory
-SRC = src
+$(TARGET): $(OBJS)
+	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJS)
 
-# Define the main executable name
-MAIN = davinci-convert
+src/%.o: src/%.cpp
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
-# Define the C source files
-SOURCES = $(wildcard $(SRC)/*.cpp)
+src/main.o: src/main.cpp src/include/config.hpp src/include/parser.hpp src/include/validator.hpp src/include/converter.hpp
+src/parser.o: src/parser.cpp src/include/parser.hpp src/include/config.hpp
+src/validator.o: src/validator.cpp src/include/validator.hpp src/include/config.hpp
+src/converter.o: src/converter.cpp src/include/converter.hpp src/include/config.hpp
 
-# Define the C object files
-OBJECTS = $(SOURCES:.cpp=.o)
-
-OUTPUTMAIN = $(OUTPUT)/$(MAIN)
-
-all: $(OUTPUT) $(OUTPUTMAIN)
-	@echo "Building executable: $(MAIN)"
-	@echo Executing 'all' complete!
-
-$(OUTPUT):
-	mkdir -p $(OUTPUT)
-
-$(OUTPUTMAIN): $(OBJECTS)
-	$(CXX) $(CXXFLAGS) -o $(OUTPUTMAIN) $(OBJECTS)
-
-.PHONY: clean
 clean:
-	@echo "Cleaning up..."
-	rm -f $(OUTPUTMAIN)
-	rm -f $(OBJECTS)
-	@echo Cleanup complete!
+	rm -f $(TARGET) $(OBJS)
 
-run: all
-	@echo "Running executable: $(OUTPUTMAIN)"
-	./$(OUTPUTMAIN)
-	@echo Executing 'run: all' complete!
+install: $(TARGET)
+	cp $(TARGET) /usr/local/bin/
 
-install: all
-	install -Dm755 $(OUTPUTMAIN) /usr/bin/davinci-convert
+uninstall:
+	rm -f /usr/local/bin/$(TARGET)
+
+test: $(TARGET)
+	@echo "Running tests..."
+	@./$(TARGET) --help
+	@echo "Test: Help command passed"
+	@./$(TARGET) 2>&1 | grep -q "Usage:" && echo "Test: No args passed" || (echo "Test failed" && exit 1)
+	@echo "All tests passed!"
+
+.PHONY: all clean install uninstall test
