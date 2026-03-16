@@ -34,3 +34,6 @@
 /.qtcreator
 /.docker
 PKGBUILD
+
+# Devcontainer
+.devcontainer/.vscode
