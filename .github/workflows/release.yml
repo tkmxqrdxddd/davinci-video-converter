@@ -84,4 +84,3 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         files: davinci-video-converter_*.deb
-        append_only: true
