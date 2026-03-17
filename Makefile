@@ -28,11 +28,32 @@ install: $(TARGET)
 uninstall:
 	rm -f /usr/local/bin/$(TARGET)
 
-test: $(TARGET)
-	@echo "Running tests..."
+test: $(TARGET) build_tests
+	@echo "Running integration tests..."
 	@./$(TARGET) --help
 	@echo "Test: Help command passed"
 	@./$(TARGET) 2>&1 | grep -q "Usage:" && echo "Test: No args passed" || (echo "Test failed" && exit 1)
+	@echo "Running unit tests..."
+	@./tests/test_parser
+	@./tests/test_validator
+	@./tests/test_converter
 	@echo "All tests passed!"
 
-.PHONY: all clean install uninstall test
+build_tests: test_parser_bin test_validator_bin test_converter_bin
+
+test_parser_bin: tests/test_parser.cpp src/parser.cpp src/include/config.hpp
+	@mkdir -p tests
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -o tests/test_parser tests/test_parser.cpp src/parser.cpp
+
+test_validator_bin: tests/test_validator.cpp src/validator.cpp src/include/config.hpp
+	@mkdir -p tests
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -o tests/test_validator tests/test_validator.cpp src/validator.cpp
+
+test_converter_bin: tests/test_converter.cpp src/converter.cpp src/include/config.hpp
+	@mkdir -p tests
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -o tests/test_converter tests/test_converter.cpp src/converter.cpp
+
+clean-tests:
+	rm -f tests/test_parser tests/test_validator tests/test_converter
+
+.PHONY: all clean install uninstall test build_tests clean-tests

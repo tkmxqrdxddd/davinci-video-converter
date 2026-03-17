@@ -37,3 +37,11 @@ PKGBUILD
 
 # Devcontainer
 .devcontainer/.vscode
+
+# Test files
+tests/*.mp4
+tests/*.mov
+tests/*.mkv
+tests/test_parser
+tests/test_validator
+tests/test_converter

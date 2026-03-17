@@ -9,25 +9,16 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Install Dependencies
-      run: sudo apt-get install -y build-essential ffmpeg wget
-
-    - name: Create Tests Directory
-      run: mkdir -p tests  # Create the tests directory if it doesn't exist
-
-    - name: Download Sample Video
-      run: wget -O tests/sample_video.mp4 https://www.pexels.com/video/3195394/download/
+      run: sudo apt-get update && sudo apt-get install -y build-essential ffmpeg
 
     - name: Build
-      run: |
-        g++ -o davinci-convert src/main.cpp -lstdc++fs
+      run: make
 
-    - name: Run
-      run: |
-        echo "Running the Video Converter..."
-        ./davinci-convert tests/sample_video.mp4 --output tests/output/video.mov
+    - name: Run Unit Tests
+      run: make test
