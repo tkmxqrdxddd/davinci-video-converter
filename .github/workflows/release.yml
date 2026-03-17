@@ -1,0 +1,81 @@
+name: Release Pipeline
+
+on:
+  release:
+    types: [published, created]
+
+jobs:
+  release:
+    name: Release Build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: [amd64, arm64]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential ffmpeg devscripts debhelper
+
+    - name: Build
+      run: make
+
+    - name: Create test input file
+      run: |
+        mkdir -p tests
+        ffmpeg -f lavfi -i testsrc=duration=1:size=128x72:rate=1 -c:v libx264 -t 1 tests/input.mp4 -y 2>/dev/null || touch tests/input.mp4
+
+    - name: Run Tests
+      run: make test
+
+    - name: Create DEB directory structure
+      run: |
+        mkdir -p debian/DEBIAN
+        mkdir -p debian/usr/bin
+        mkdir -p debian/usr/share/doc/davinci-video-converter
+
+    - name: Create control file
+      run: |
+        VERSION=$(echo ${GITHUB_REF#refs/tags/} | sed 's/^v//')
+        cat > debian/DEBIAN/control << EOF
+        Package: davinci-video-converter
+        Version: $VERSION
+        Section: video
+        Priority: optional
+        Architecture: ${{ matrix.arch }}
+        Maintainer: Developer <developer@example.com>
+        Description: DaVinci Video Converter
+         A command-line video conversion tool optimized for DaVinci Resolve workflows.
+         Supports various codecs (H.264, H.265, ProRes) with quality presets.
+        Depends: ffmpeg (>= 4.0), libc6 (>= 2.28)
+        EOF
+
+    - name: Copy binary and documentation
+      run: |
+        cp davinci-video-converter debian/usr/bin/
+        cp README.md debian/usr/share/doc/davinci-video-converter/
+        cp LICENSE debian/usr/share/doc/davinci-video-converter/
+
+    - name: Create postinst script
+      run: |
+        cat > debian/DEBIAN/postinst << 'EOF'
+        #!/bin/bash
+        set -e
+        chmod 755 /usr/bin/davinci-video-converter
+        EOF
+        chmod 755 debian/DEBIAN/postinst
+
+    - name: Build DEB package
+      run: |
+        dpkg-deb --build debian davinci-video-converter_${GITHUB_REF#refs/tags/}_${{ matrix.arch }}.deb
+
+    - name: Upload to Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: davinci-video-converter_*.deb
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
