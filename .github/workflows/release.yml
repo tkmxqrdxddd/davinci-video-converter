@@ -1,9 +1,8 @@
 name: Release Pipeline
 
 on:
-  push:
-    tags:
-      - 'v*'
+  release:
+    types: [published, created]
 
 jobs:
   release:
