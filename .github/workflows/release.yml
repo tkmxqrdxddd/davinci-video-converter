@@ -80,24 +80,8 @@ jobs:
         name: davinci-video-converter-${{ matrix.arch }}.deb
         path: davinci-video-converter_*.deb
 
-    - name: Upload to GitHub Release
-      uses: actions/github-script@v7
+    - name: Upload DEB package to GitHub Release
+      uses: softprops/action-gh-release@v1
       with:
-        script: |
-          const fs = require('fs');
-          const tag = context.ref.replace('refs/tags/', '');
-          const debFile = fs.readdirSync('.').find(f => f.endsWith('${{ matrix.arch }}.deb'));
-          
-          const release = await github.rest.repos.getReleaseByTag({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            tag: tag
-          });
-          
-          await github.rest.repos.uploadReleaseAsset({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            release_id: release.data.id,
-            name: debFile,
-            data: fs.readFileSync(debFile)
-          });
+        files: davinci-video-converter_*.deb
+        token: ${{ secrets.GITHUB_TOKEN }}
