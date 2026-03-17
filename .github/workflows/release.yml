@@ -3,6 +3,7 @@ name: Release Pipeline
 on:
   release:
     types: [published, created]
+  workflow_dispatch:
 
 jobs:
   release:
