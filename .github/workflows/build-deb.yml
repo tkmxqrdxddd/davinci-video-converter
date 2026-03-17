@@ -7,6 +7,9 @@ on:
   release:
     types: [published]
 
+permissions:
+  contents: read
+
 jobs:
   build-deb:
     runs-on: ubuntu-latest
