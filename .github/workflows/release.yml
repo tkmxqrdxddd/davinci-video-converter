@@ -5,6 +5,9 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: write
+
 jobs:
   release:
     name: Release Build
@@ -84,4 +87,3 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         files: davinci-video-converter_*.deb
-        token: ${{ secrets.GITHUB_TOKEN }}
