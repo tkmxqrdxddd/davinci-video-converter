@@ -84,6 +84,8 @@ jobs:
 
     - name: Create Release if not exists
       if: github.event_name == 'push'
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         # Check if release exists, create if not
         if ! gh release view ${{ github.ref_name }} &>/dev/null; then
