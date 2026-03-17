@@ -1,8 +1,9 @@
 name: Release Pipeline
 
 on:
-  release:
-    types: [published, created]
+  push:
+    tags:
+      - 'v*'
 
 jobs:
   release:
@@ -73,9 +74,16 @@ jobs:
       run: |
         dpkg-deb --build debian davinci-video-converter_${GITHUB_REF#refs/tags/}_${{ matrix.arch }}.deb
 
-    - name: Upload to Release
+    - name: Upload DEB package as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: davinci-video-converter-${{ matrix.arch }}.deb
+        path: davinci-video-converter_*.deb
+
+    - name: Create Release
       uses: softprops/action-gh-release@v1
       with:
         files: davinci-video-converter_*.deb
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+        draft: false
+        prerelease: false
