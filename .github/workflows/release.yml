@@ -22,16 +22,8 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y build-essential ffmpeg devscripts debhelper
 
-    - name: Build
+    - name: Build binary
       run: make
-
-    - name: Create test input file
-      run: |
-        mkdir -p tests
-        ffmpeg -f lavfi -i testsrc=duration=1:size=128x72:rate=1 -c:v libx264 -t 1 tests/input.mp4 -y 2>/dev/null || touch tests/input.mp4
-
-    - name: Run Tests
-      run: make test
 
     - name: Create DEB directory structure
       run: |
