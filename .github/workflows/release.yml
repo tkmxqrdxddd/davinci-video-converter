@@ -82,15 +82,16 @@ jobs:
         name: davinci-video-converter-${{ matrix.arch }}.deb
         path: davinci-video-converter_*.deb
 
-    - name: Upload DEB package to Release
+    - name: Create Release if not exists
       if: github.event_name == 'push'
+      run: |
+        # Check if release exists, create if not
+        if ! gh release view ${{ github.ref_name }} &>/dev/null; then
+          gh release create ${{ github.ref_name }} --notes "Release ${{ github.ref_name }}" --title "Version ${{ github.ref_name }}"
+        fi
+
+    - name: Upload DEB package to Release
       uses: softprops/action-gh-release@v1
       with:
         files: davinci-video-converter_*.deb
         tag_name: ${{ github.ref_name }}
-
-    - name: Upload DEB package to existing Release
-      if: github.event_name == 'release'
-      uses: softprops/action-gh-release@v1
-      with:
-        files: davinci-video-converter_*.deb
