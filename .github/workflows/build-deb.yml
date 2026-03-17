@@ -85,12 +85,6 @@ jobs:
       run: |
         dpkg-deb --build debian davinci-video-converter_${GITHUB_REF#refs/tags/}_${{ matrix.arch }}.deb
 
-    - name: Upload DEB package
-      uses: actions/upload-artifact@v4
-      with:
-        name: davinci-video-converter-${{ matrix.arch }}.deb
-        path: davinci-video-converter_*.deb
-
     - name: Upload DEB package as artifact
       uses: actions/upload-artifact@v4
       with:
