@@ -44,4 +44,4 @@ tests/*.mov
 tests/*.mkv
 tests/test_parser
 tests/test_validator
-tests/test_converter
+tests/test_converter# Contributors
