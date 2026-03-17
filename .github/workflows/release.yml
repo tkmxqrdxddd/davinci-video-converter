@@ -12,9 +12,6 @@ jobs:
   release:
     name: Release Build
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        arch: [amd64, arm64]
 
     steps:
     - name: Checkout code
@@ -50,7 +47,7 @@ jobs:
         Version: $VERSION
         Section: video
         Priority: optional
-        Architecture: ${{ matrix.arch }}
+        Architecture: amd64
         Maintainer: Developer <developer@example.com>
         Description: DaVinci Video Converter
          A command-line video conversion tool optimized for DaVinci Resolve workflows.
@@ -73,17 +70,22 @@ jobs:
         EOF
         chmod 755 debian/DEBIAN/postinst
 
-    - name: Build DEB package
+    - name: Build AMD64 DEB package
       run: |
-        dpkg-deb --build debian davinci-video-converter_${GITHUB_REF#refs/tags/}_${{ matrix.arch }}.deb
+        dpkg-deb --build debian davinci-video-converter_${GITHUB_REF#refs/tags/}_amd64.deb
 
-    - name: Upload DEB package as artifact
+    - name: Build ARM64 DEB package
+      run: |
+        sed -i 's/Architecture: amd64/Architecture: arm64/' debian/DEBIAN/control
+        dpkg-deb --build debian davinci-video-converter_${GITHUB_REF#refs/tags/}_arm64.deb
+
+    - name: Upload DEB packages as artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: davinci-video-converter-${{ matrix.arch }}.deb
+        name: davinci-video-converter-debs
         path: davinci-video-converter_*.deb
 
-    - name: Upload DEB package to GitHub Release
+    - name: Upload DEB packages to GitHub Release
       uses: softprops/action-gh-release@v1
       with:
         files: davinci-video-converter_*.deb
