@@ -1,26 +1,32 @@
 #include "converter.hpp"
-#include <sstream>
 #include <iostream>
-#include <vector>
+#include <sstream>
 #include <string>
 #include <string_view>
-#include <unistd.h>
 #include <sys/wait.h>
+#include <unistd.h>
+#include <vector>
 
 static std::string_view codec_to_ffmpeg(Codec codec) {
     switch (codec) {
-        case Codec::h264:  return "libx264";
-        case Codec::h265:  return "libx265";
-        case Codec::prores: return "prores_ks";
+    case Codec::h264:
+        return "libx264";
+    case Codec::h265:
+        return "libx265";
+    case Codec::prores:
+        return "prores_ks";
     }
     return "libx264";
 }
 
 static std::string_view quality_to_preset(Quality quality) {
     switch (quality) {
-        case Quality::fast:   return "fast";
-        case Quality::medium: return "medium";
-        case Quality::slow:   return "slow";
+    case Quality::fast:
+        return "fast";
+    case Quality::medium:
+        return "medium";
+    case Quality::slow:
+        return "slow";
     }
     return "medium";
 }
@@ -59,10 +65,8 @@ static std::vector<std::string> build_ffmpeg_args(const Config& config) {
 std::string build_ffmpeg_command(const Config& config) {
     std::ostringstream cmd;
     cmd << "ffmpeg -i \"" << config.input_path << "\""
-        << " -c:v " << codec_to_ffmpeg(config.codec)
-        << " -preset " << quality_to_preset(config.quality)
-        << " -crf " << config.crf
-        << " -c:a copy";
+        << " -c:v " << codec_to_ffmpeg(config.codec) << " -preset "
+        << quality_to_preset(config.quality) << " -crf " << config.crf << " -c:a copy";
 
     if (config.verbose) {
         cmd << " -loglevel verbose";

@@ -1,9 +1,9 @@
-#include <iostream>
-#include <optional>
 #include "config.hpp"
+#include "converter.hpp"
 #include "parser.hpp"
 #include "validator.hpp"
-#include "converter.hpp"
+#include <iostream>
+#include <optional>
 
 int main(int argc, char* argv[]) {
     if (argc < 2) {

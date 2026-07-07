@@ -1,8 +1,8 @@
 #include "parser.hpp"
 #include <iostream>
-#include <vector>
 #include <optional>
 #include <unordered_map>
+#include <vector>
 
 static const std::unordered_map<std::string, Codec> codec_map = {
     {"h264", Codec::h264},
@@ -17,15 +17,16 @@ static const std::unordered_map<std::string, Quality> quality_map = {
 };
 
 void print_usage(const char* program_name) {
-    std::cout << "Usage: " << program_name << " [options] <input> <output>\n"
-              << "Options:\n"
-              << "  -c, --codec <codec>       Video codec (h264, h265, prores) [default: h264]\n"
-              << "  -q, --quality <qual>      Quality preset (fast, medium, slow) [default: medium]\n"
-              << "  -r, --crf <value>         CRF value 0-51 [default: 23]\n"
-              << "  -y, --overwrite           Overwrite output file without asking\n"
-              << "  -v, --verbose             Enable verbose output\n"
-              << "  -h, --help                Show this help message\n"
-              << "      --version             Show version information\n";
+    std::cout
+        << "Usage: " << program_name << " [options] <input> <output>\n"
+        << "Options:\n"
+        << "  -c, --codec <codec>       Video codec (h264, h265, prores) [default: h264]\n"
+        << "  -q, --quality <qual>      Quality preset (fast, medium, slow) [default: medium]\n"
+        << "  -r, --crf <value>         CRF value 0-51 [default: 23]\n"
+        << "  -y, --overwrite           Overwrite output file without asking\n"
+        << "  -v, --verbose             Enable verbose output\n"
+        << "  -h, --help                Show this help message\n"
+        << "      --version             Show version information\n";
 }
 
 std::optional<Config> parse_arguments(int argc, char* argv[], bool& help_requested) {
@@ -53,7 +54,8 @@ std::optional<Config> parse_arguments(int argc, char* argv[], bool& help_request
             std::string val = argv[++i];
             auto it = codec_map.find(val);
             if (it == codec_map.end()) {
-                std::cerr << "Error: Invalid codec '" << val << "'. Valid options: h264, h265, prores" << std::endl;
+                std::cerr << "Error: Invalid codec '" << val
+                          << "'. Valid options: h264, h265, prores" << std::endl;
                 return std::nullopt;
             }
             config.codec = it->second;
@@ -66,7 +68,8 @@ std::optional<Config> parse_arguments(int argc, char* argv[], bool& help_request
             std::string val = argv[++i];
             auto it = quality_map.find(val);
             if (it == quality_map.end()) {
-                std::cerr << "Error: Invalid quality '" << val << "'. Valid options: fast, medium, slow" << std::endl;
+                std::cerr << "Error: Invalid quality '" << val
+                          << "'. Valid options: fast, medium, slow" << std::endl;
                 return std::nullopt;
             }
             config.quality = it->second;

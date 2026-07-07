@@ -1,5 +1,5 @@
-#include <catch2/catch_test_macros.hpp>
 #include "parser.hpp"
+#include <catch2/catch_test_macros.hpp>
 
 TEST_CASE("Parse --version", "[parser]") {
     bool help_requested = false;
@@ -35,15 +35,9 @@ TEST_CASE("Parse default values", "[parser]") {
 TEST_CASE("Parse short options with custom values", "[parser]") {
     bool help_requested = false;
     char* args[] = {
-        (char*)"program",
-        (char*)"input.mov",
-        (char*)"output.mkv",
-        (char*)"-c", (char*)"h265",
-        (char*)"-q", (char*)"slow",
-        (char*)"-r", (char*)"18",
-        (char*)"-v",
-        nullptr
-    };
+        (char*)"program", (char*)"input.mov", (char*)"output.mkv", (char*)"-c", (char*)"h265",
+        (char*)"-q",      (char*)"slow",      (char*)"-r",         (char*)"18", (char*)"-v",
+        nullptr};
     auto result = parse_arguments(10, args, help_requested);
     REQUIRE(result.has_value());
     Config config = *result;
@@ -58,13 +52,7 @@ TEST_CASE("Parse short options with custom values", "[parser]") {
 
 TEST_CASE("Parse --overwrite flag", "[parser]") {
     bool help_requested = false;
-    char* args[] = {
-        (char*)"program",
-        (char*)"in.mp4",
-        (char*)"out.mp4",
-        (char*)"-y",
-        nullptr
-    };
+    char* args[] = {(char*)"program", (char*)"in.mp4", (char*)"out.mp4", (char*)"-y", nullptr};
     auto result = parse_arguments(4, args, help_requested);
     REQUIRE(result.has_value());
     REQUIRE((*result).overwrite == true);
@@ -72,13 +60,8 @@ TEST_CASE("Parse --overwrite flag", "[parser]") {
 
 TEST_CASE("Parse long overwrite flag", "[parser]") {
     bool help_requested = false;
-    char* args[] = {
-        (char*)"program",
-        (char*)"in.mp4",
-        (char*)"out.mp4",
-        (char*)"--overwrite",
-        nullptr
-    };
+    char* args[] = {(char*)"program", (char*)"in.mp4", (char*)"out.mp4", (char*)"--overwrite",
+                    nullptr};
     auto result = parse_arguments(4, args, help_requested);
     REQUIRE(result.has_value());
     REQUIRE((*result).overwrite == true);
@@ -86,16 +69,9 @@ TEST_CASE("Parse long overwrite flag", "[parser]") {
 
 TEST_CASE("Parse long options with custom values", "[parser]") {
     bool help_requested = false;
-    char* args[] = {
-        (char*)"program",
-        (char*)"src.mp4",
-        (char*)"dst.mp4",
-        (char*)"--codec", (char*)"prores",
-        (char*)"--quality", (char*)"fast",
-        (char*)"--crf", (char*)"28",
-        (char*)"--verbose",
-        nullptr
-    };
+    char* args[] = {(char*)"program", (char*)"src.mp4",   (char*)"dst.mp4", (char*)"--codec",
+                    (char*)"prores",  (char*)"--quality", (char*)"fast",    (char*)"--crf",
+                    (char*)"28",      (char*)"--verbose", nullptr};
     auto result = parse_arguments(10, args, help_requested);
     REQUIRE(result.has_value());
     Config config = *result;
@@ -110,13 +86,8 @@ TEST_CASE("Parse long options with custom values", "[parser]") {
 
 TEST_CASE("Parse invalid codec returns error", "[parser]") {
     bool help_requested = false;
-    char* args[] = {
-        (char*)"program",
-        (char*)"in.mp4",
-        (char*)"out.mp4",
-        (char*)"-c", (char*)"invalid_codec",
-        nullptr
-    };
+    char* args[] = {(char*)"program", (char*)"in.mp4",        (char*)"out.mp4",
+                    (char*)"-c",      (char*)"invalid_codec", nullptr};
     auto result = parse_arguments(5, args, help_requested);
     REQUIRE_FALSE(result.has_value());
     REQUIRE_FALSE(help_requested);
@@ -124,13 +95,7 @@ TEST_CASE("Parse invalid codec returns error", "[parser]") {
 
 TEST_CASE("Parse missing option value returns error", "[parser]") {
     bool help_requested = false;
-    char* args[] = {
-        (char*)"program",
-        (char*)"in.mp4",
-        (char*)"out.mp4",
-        (char*)"-c",
-        nullptr
-    };
+    char* args[] = {(char*)"program", (char*)"in.mp4", (char*)"out.mp4", (char*)"-c", nullptr};
     auto result = parse_arguments(4, args, help_requested);
     REQUIRE_FALSE(result.has_value());
     REQUIRE_FALSE(help_requested);
@@ -138,13 +103,8 @@ TEST_CASE("Parse missing option value returns error", "[parser]") {
 
 TEST_CASE("Parse unknown option returns error", "[parser]") {
     bool help_requested = false;
-    char* args[] = {
-        (char*)"program",
-        (char*)"in.mp4",
-        (char*)"out.mp4",
-        (char*)"--unknown",
-        nullptr
-    };
+    char* args[] = {(char*)"program", (char*)"in.mp4", (char*)"out.mp4", (char*)"--unknown",
+                    nullptr};
     auto result = parse_arguments(4, args, help_requested);
     REQUIRE_FALSE(result.has_value());
     REQUIRE_FALSE(help_requested);
