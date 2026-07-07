@@ -26,10 +26,13 @@ jobs:
     - name: Install Dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y build-essential ffmpeg
+        sudo apt-get install -y build-essential cmake ffmpeg
+
+    - name: Configure (Debug)
+      run: cmake --preset debug
 
     - name: Build
-      run: make
+      run: cmake --build build/debug
 
     - name: Create test input file
       run: |
@@ -37,7 +40,7 @@ jobs:
         ffmpeg -f lavfi -i testsrc=duration=1:size=128x72:rate=1 -c:v libx264 -t 1 tests/input.mp4 -y 2>/dev/null || touch tests/input.mp4
 
     - name: Run Tests
-      run: make test
+      run: ctest --preset debug
 
   lint:
     name: Lint
@@ -52,7 +55,7 @@ jobs:
 
     - name: Check formatting
       run: |
-        find src -name "*.cpp" -o -name "*.hpp" | xargs clang-format --dry-run --Werror || echo "Formatting check completed"
+        find src tests -name "*.cpp" -o -name "*.hpp" | xargs clang-format --dry-run --Werror || echo "Formatting check completed"
 
   build:
     name: Build
@@ -66,24 +69,19 @@ jobs:
     - name: Install Dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y build-essential ffmpeg
+        sudo apt-get install -y build-essential cmake ffmpeg
+
+    - name: Configure (Release)
+      run: cmake --preset release
 
     - name: Build
-      run: make
-
-    - name: Create test input file
-      run: |
-        mkdir -p tests
-        ffmpeg -f lavfi -i testsrc=duration=1:size=128x72:rate=1 -c:v libx264 -t 1 tests/input.mp4 -y 2>/dev/null || touch tests/input.mp4
-
-    - name: Run Tests
-      run: make test
+      run: cmake --build build/release
 
     - name: Upload binary
       uses: actions/upload-artifact@v4
       with:
         name: davinci-video-converter
-        path: davinci-video-converter
+        path: build/release/davinci-video-converter
 
   package-deb:
     name: Build DEB Package
@@ -102,18 +100,13 @@ jobs:
     - name: Install Dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y build-essential ffmpeg devscripts debhelper
+        sudo apt-get install -y build-essential cmake ffmpeg devscripts debhelper
+
+    - name: Configure (Release)
+      run: cmake --preset release
 
     - name: Build
-      run: make
-
-    - name: Create test input file
-      run: |
-        mkdir -p tests
-        ffmpeg -f lavfi -i testsrc=duration=1:size=128x72:rate=1 -c:v libx264 -t 1 tests/input.mp4 -y 2>/dev/null || touch tests/input.mp4
-
-    - name: Run Tests
-      run: make test
+      run: cmake --build build/release
 
     - name: Create DEB directory structure
       run: |
@@ -139,7 +132,7 @@ jobs:
 
     - name: Copy binary and documentation
       run: |
-        cp davinci-video-converter debian/usr/bin/
+        cp build/release/davinci-video-converter debian/usr/bin/
         cp README.md debian/usr/share/doc/davinci-video-converter/
         cp LICENSE debian/usr/share/doc/davinci-video-converter/
 

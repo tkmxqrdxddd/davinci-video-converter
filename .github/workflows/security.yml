@@ -54,8 +54,9 @@ jobs:
 
     - name: Build and analyze with clang-tidy
       run: |
-        make clean
-        bear -- make 2>&1 | tee build.log || true
+        rm -rf build
+        cmake --preset debug
+        bear -- cmake --build build/debug 2>&1 | tee build.log || true
         clang-tidy -checks='*' -warnings-as-errors='*' src/*.cpp -- -Isrc/include 2>&1 | tee clang-tidy-report.txt || exit 0
 
     - name: Upload clang-tidy report
@@ -103,8 +104,9 @@ jobs:
 
     - name: Build with debug symbols
       run: |
-        make clean
-        CXXFLAGS="-g -O0" make
+        rm -rf build
+        cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-g -O0" -B build
+        cmake --build build
 
     - name: Create test input file
       run: |
@@ -115,6 +117,6 @@ jobs:
       run: |
         mkdir -p tests
         ffmpeg -f lavfi -i testsrc=duration=1:size=128x72:rate=1 -c:v libx264 -t 1 tests/input.mp4 -y 2>/dev/null || touch tests/input.mp4
-        valgrind --leak-check=full --error-exitcode=1 ./tests/test_parser || exit 0
-        valgrind --leak-check=full --error-exitcode=1 ./tests/test_validator || exit 0
-        valgrind --leak-check=full --error-exitcode=1 ./tests/test_converter || exit 0
+        valgrind --leak-check=full --error-exitcode=1 ./build/tests/test_parser || exit 0
+        valgrind --leak-check=full --error-exitcode=1 ./build/tests/test_validator || exit 0
+        valgrind --leak-check=full --error-exitcode=1 ./build/tests/test_converter || exit 0
