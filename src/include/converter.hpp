@@ -5,6 +5,6 @@
 #include <string>
 
 std::string build_ffmpeg_command(const Config& config);
-int execute_conversion(const std::string& command, bool verbose);
+int execute_conversion(const Config& config, bool verbose);
 
 #endif // CONVERTER_HPP

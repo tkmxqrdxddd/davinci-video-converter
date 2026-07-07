@@ -1,51 +1,91 @@
-#include "../src/include/parser.hpp"
-#include <iostream>
-#include <cassert>
-#include <cstring>
+#include <catch2/catch_test_macros.hpp>
+#include "parser.hpp"
 
-void test_parse_help() {
-    // Help triggers print_usage and exits, so we skip this test
-    std::cout << "test_parse_help: skipped (exits on --help)" << std::endl;
+TEST_CASE("Parse --version", "[parser]") {
+    bool help_requested = false;
+    char* args[] = {(char*)"program", (char*)"--version", nullptr};
+    auto result = parse_arguments(2, args, help_requested);
+    REQUIRE_FALSE(result.has_value());
+    REQUIRE(help_requested == true);
 }
 
-void test_parse_default_values() {
+TEST_CASE("Parse --help", "[parser]") {
+    bool help_requested = false;
+    char* args[] = {(char*)"program", (char*)"--help", nullptr};
+    auto result = parse_arguments(2, args, help_requested);
+    REQUIRE_FALSE(result.has_value());
+    REQUIRE(help_requested == true);
+}
+
+TEST_CASE("Parse default values", "[parser]") {
+    bool help_requested = false;
     char* args[] = {(char*)"program", (char*)"input.mp4", (char*)"output.mp4", nullptr};
-    Config config = parse_arguments(3, args);
+    auto result = parse_arguments(3, args, help_requested);
+    REQUIRE(result.has_value());
+    Config config = *result;
 
-    assert(config.input_path == "input.mp4");
-    assert(config.output_path == "output.mp4");
-    assert(config.codec == "h264");
-    assert(config.quality == "medium");
-    assert(config.crf == 23);
-    assert(config.verbose == false);
-
-    std::cout << "test_parse_default_values: PASSED" << std::endl;
+    REQUIRE(config.input_path == "input.mp4");
+    REQUIRE(config.output_path == "output.mp4");
+    REQUIRE(config.codec == Codec::h264);
+    REQUIRE(config.quality == Quality::medium);
+    REQUIRE(config.crf == 23);
+    REQUIRE(config.verbose == false);
 }
 
-void test_parse_custom_values() {
+TEST_CASE("Parse short options with custom values", "[parser]") {
+    bool help_requested = false;
     char* args[] = {
         (char*)"program",
         (char*)"input.mov",
         (char*)"output.mkv",
-        (char*)"-c", (char*)"hevc",
+        (char*)"-c", (char*)"h265",
         (char*)"-q", (char*)"slow",
         (char*)"-r", (char*)"18",
         (char*)"-v",
         nullptr
     };
-    Config config = parse_arguments(10, args);
+    auto result = parse_arguments(10, args, help_requested);
+    REQUIRE(result.has_value());
+    Config config = *result;
 
-    assert(config.input_path == "input.mov");
-    assert(config.output_path == "output.mkv");
-    assert(config.codec == "hevc");
-    assert(config.quality == "slow");
-    assert(config.crf == 18);
-    assert(config.verbose == true);
-
-    std::cout << "test_parse_custom_values: PASSED" << std::endl;
+    REQUIRE(config.input_path == "input.mov");
+    REQUIRE(config.output_path == "output.mkv");
+    REQUIRE(config.codec == Codec::h265);
+    REQUIRE(config.quality == Quality::slow);
+    REQUIRE(config.crf == 18);
+    REQUIRE(config.verbose == true);
 }
 
-void test_parse_long_options() {
+TEST_CASE("Parse --overwrite flag", "[parser]") {
+    bool help_requested = false;
+    char* args[] = {
+        (char*)"program",
+        (char*)"in.mp4",
+        (char*)"out.mp4",
+        (char*)"-y",
+        nullptr
+    };
+    auto result = parse_arguments(4, args, help_requested);
+    REQUIRE(result.has_value());
+    REQUIRE((*result).overwrite == true);
+}
+
+TEST_CASE("Parse long overwrite flag", "[parser]") {
+    bool help_requested = false;
+    char* args[] = {
+        (char*)"program",
+        (char*)"in.mp4",
+        (char*)"out.mp4",
+        (char*)"--overwrite",
+        nullptr
+    };
+    auto result = parse_arguments(4, args, help_requested);
+    REQUIRE(result.has_value());
+    REQUIRE((*result).overwrite == true);
+}
+
+TEST_CASE("Parse long options with custom values", "[parser]") {
+    bool help_requested = false;
     char* args[] = {
         (char*)"program",
         (char*)"src.mp4",
@@ -56,25 +96,56 @@ void test_parse_long_options() {
         (char*)"--verbose",
         nullptr
     };
-    Config config = parse_arguments(10, args);
+    auto result = parse_arguments(10, args, help_requested);
+    REQUIRE(result.has_value());
+    Config config = *result;
 
-    assert(config.input_path == "src.mp4");
-    assert(config.output_path == "dst.mp4");
-    assert(config.codec == "prores");
-    assert(config.quality == "fast");
-    assert(config.crf == 28);
-    assert(config.verbose == true);
-
-    std::cout << "test_parse_long_options: PASSED" << std::endl;
+    REQUIRE(config.input_path == "src.mp4");
+    REQUIRE(config.output_path == "dst.mp4");
+    REQUIRE(config.codec == Codec::prores);
+    REQUIRE(config.quality == Quality::fast);
+    REQUIRE(config.crf == 28);
+    REQUIRE(config.verbose == true);
 }
 
-int main() {
-    std::cout << "=== Parser Tests ===" << std::endl;
-    
-    test_parse_default_values();
-    test_parse_custom_values();
-    test_parse_long_options();
-    
-    std::cout << "All parser tests passed!" << std::endl;
-    return 0;
+TEST_CASE("Parse invalid codec returns error", "[parser]") {
+    bool help_requested = false;
+    char* args[] = {
+        (char*)"program",
+        (char*)"in.mp4",
+        (char*)"out.mp4",
+        (char*)"-c", (char*)"invalid_codec",
+        nullptr
+    };
+    auto result = parse_arguments(5, args, help_requested);
+    REQUIRE_FALSE(result.has_value());
+    REQUIRE_FALSE(help_requested);
+}
+
+TEST_CASE("Parse missing option value returns error", "[parser]") {
+    bool help_requested = false;
+    char* args[] = {
+        (char*)"program",
+        (char*)"in.mp4",
+        (char*)"out.mp4",
+        (char*)"-c",
+        nullptr
+    };
+    auto result = parse_arguments(4, args, help_requested);
+    REQUIRE_FALSE(result.has_value());
+    REQUIRE_FALSE(help_requested);
+}
+
+TEST_CASE("Parse unknown option returns error", "[parser]") {
+    bool help_requested = false;
+    char* args[] = {
+        (char*)"program",
+        (char*)"in.mp4",
+        (char*)"out.mp4",
+        (char*)"--unknown",
+        nullptr
+    };
+    auto result = parse_arguments(4, args, help_requested);
+    REQUIRE_FALSE(result.has_value());
+    REQUIRE_FALSE(help_requested);
 }

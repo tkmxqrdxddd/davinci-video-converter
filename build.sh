@@ -2,9 +2,11 @@
 
 set -e
 
-echo "Building DaVinci Video Converter..."
+BUILD_TYPE="${1:-debug}"
 
-make clean
-make
+echo "Building DaVinci Video Converter ($BUILD_TYPE)..."
 
-echo "Build complete! Binary: ./davinci-video-converter"
+cmake --preset "$BUILD_TYPE"
+cmake --build "build/$BUILD_TYPE"
+
+echo "Build complete! Binary: ./build/$BUILD_TYPE/davinci-video-converter"

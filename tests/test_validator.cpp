@@ -1,150 +1,106 @@
-#include "../src/include/validator.hpp"
-#include <iostream>
-#include <cassert>
+#include <catch2/catch_test_macros.hpp>
+#include "validator.hpp"
 
-void test_valid_config() {
+TEST_CASE("Valid config passes validation", "[validator]") {
     Config config;
     config.input_path = "tests/input.mp4";
     config.output_path = "tests/output.mp4";
-    config.codec = "h264";
-    config.quality = "medium";
-    config.crf = 23;
 
-    std::string error;
-    bool result = validate_config(config, error);
-
-    assert(result == true);
-    assert(error.empty());
-
-    std::cout << "test_valid_config: PASSED" << std::endl;
+    auto error = validate_config(config);
+    REQUIRE_FALSE(error.has_value());
 }
 
-void test_missing_input() {
+TEST_CASE("Missing input path fails validation", "[validator]") {
     Config config;
     config.input_path = "";
     config.output_path = "tests/output.mp4";
 
-    std::string error;
-    bool result = validate_config(config, error);
-
-    assert(result == false);
-    assert(!error.empty());
-
-    std::cout << "test_missing_input: PASSED" << std::endl;
+    auto error = validate_config(config);
+    REQUIRE(error.has_value());
 }
 
-void test_missing_output() {
+TEST_CASE("Missing output path fails validation", "[validator]") {
     Config config;
     config.input_path = "tests/input.mp4";
     config.output_path = "";
 
-    std::string error;
-    bool result = validate_config(config, error);
-
-    assert(result == false);
-    assert(!error.empty());
-
-    std::cout << "test_missing_output: PASSED" << std::endl;
+    auto error = validate_config(config);
+    REQUIRE(error.has_value());
 }
 
-void test_invalid_codec() {
+TEST_CASE("CRF out of range fails validation", "[validator]") {
     Config config;
     config.input_path = "tests/input.mp4";
     config.output_path = "tests/output.mp4";
-    config.codec = "invalid_codec";
 
-    std::string error;
-    bool result = validate_config(config, error);
+    SECTION("CRF below 0") {
+        config.crf = -1;
+        REQUIRE(validate_config(config).has_value());
+    }
 
-    assert(result == false);
-    assert(!error.empty());
+    SECTION("CRF above 51") {
+        config.crf = 60;
+        REQUIRE(validate_config(config).has_value());
+    }
 
-    std::cout << "test_invalid_codec: PASSED" << std::endl;
+    SECTION("CRF at minimum boundary") {
+        config.crf = 0;
+        REQUIRE_FALSE(validate_config(config).has_value());
+    }
+
+    SECTION("CRF at maximum boundary") {
+        config.crf = 51;
+        REQUIRE_FALSE(validate_config(config).has_value());
+    }
 }
 
-void test_invalid_quality() {
+TEST_CASE("Non-existent input file fails validation", "[validator]") {
+    Config config;
+    config.input_path = "tests/nonexistent.mp4";
+    config.output_path = "tests/output.mp4";
+
+    auto error = validate_config(config);
+    REQUIRE(error.has_value());
+}
+
+TEST_CASE("All valid codecs pass validation", "[validator]") {
     Config config;
     config.input_path = "tests/input.mp4";
     config.output_path = "tests/output.mp4";
-    config.quality = "ultra_invalid";
 
-    std::string error;
-    bool result = validate_config(config, error);
-
-    assert(result == false);
-    assert(!error.empty());
-
-    std::cout << "test_invalid_quality: PASSED" << std::endl;
-}
-
-void test_crf_range() {
-    // CRF too low
-    Config config1;
-    config1.input_path = "tests/input.mp4";
-    config1.output_path = "tests/output.mp4";
-    config1.crf = -1;
-
-    std::string error1;
-    assert(validate_config(config1, error1) == false);
-
-    // CRF too high
-    Config config2;
-    config2.input_path = "tests/input.mp4";
-    config2.output_path = "tests/output.mp4";
-    config2.crf = 60;
-
-    std::string error2;
-    assert(validate_config(config2, error2) == false);
-
-    std::cout << "test_crf_range: PASSED" << std::endl;
-}
-
-void test_valid_codecs() {
-    const char* valid_codecs[] = {"h264", "h265", "prores"};
-
-    for (const char* codec : valid_codecs) {
-        Config config;
-        config.input_path = "tests/input.mp4";
-        config.output_path = "tests/output.mp4";
-        config.codec = codec;
-
-        std::string error;
-        bool result = validate_config(config, error);
-        assert(result == true);
+    SECTION("h264") {
+        config.codec = Codec::h264;
+        REQUIRE_FALSE(validate_config(config).has_value());
     }
 
-    std::cout << "test_valid_codecs: PASSED" << std::endl;
-}
-
-void test_valid_qualities() {
-    const char* valid_qualities[] = {"fast", "medium", "slow"};
-
-    for (const char* quality : valid_qualities) {
-        Config config;
-        config.input_path = "tests/input.mp4";
-        config.output_path = "tests/output.mp4";
-        config.quality = quality;
-
-        std::string error;
-        bool result = validate_config(config, error);
-        assert(result == true);
+    SECTION("h265") {
+        config.codec = Codec::h265;
+        REQUIRE_FALSE(validate_config(config).has_value());
     }
 
-    std::cout << "test_valid_qualities: PASSED" << std::endl;
+    SECTION("prores") {
+        config.codec = Codec::prores;
+        REQUIRE_FALSE(validate_config(config).has_value());
+    }
 }
 
-int main() {
-    std::cout << "=== Validator Tests ===" << std::endl;
-    
-    test_valid_config();
-    test_missing_input();
-    test_missing_output();
-    test_invalid_codec();
-    test_invalid_quality();
-    test_crf_range();
-    test_valid_codecs();
-    test_valid_qualities();
-    
-    std::cout << "All validator tests passed!" << std::endl;
-    return 0;
+TEST_CASE("All valid qualities pass validation", "[validator]") {
+    Config config;
+    config.input_path = "tests/input.mp4";
+    config.output_path = "tests/output.mp4";
+
+    SECTION("fast") {
+        config.quality = Quality::fast;
+        REQUIRE_FALSE(validate_config(config).has_value());
+    }
+
+    SECTION("medium") {
+        config.quality = Quality::medium;
+        REQUIRE_FALSE(validate_config(config).has_value());
+    }
+
+    SECTION("slow") {
+        config.quality = Quality::slow;
+        REQUIRE_FALSE(validate_config(config).has_value());
+    }
 }

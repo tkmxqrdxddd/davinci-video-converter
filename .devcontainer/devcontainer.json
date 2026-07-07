@@ -1,18 +1,20 @@
 {
   "name": "DaVinci Video Converter",
-  "image": "docker.io/library/fedora:39",
+  "image": "docker.io/library/fedora:40",
   "customizations": {
     "vscode": {
       "extensions": [
         "ms-vscode.cpptools",
         "ms-vscode.cmake-tools",
-        "twxs.cmake"
+        "twxs.cmake",
+        "llvm-vs-code-extensions.vscode-clangd"
       ],
       "settings": {
         "terminal.integrated.defaultProfile.linux": "bash",
         "C_Cpp.default.compilerPath": "/usr/bin/g++",
         "C_Cpp.default.cStandard": "gnu17",
-        "C_Cpp.default.cppStandard": "gnu++17"
+        "C_Cpp.default.cppStandard": "gnu++17",
+        "cmake.buildDirectory": "${workspaceFolder}/build/${buildType}"
       }
     }
   },
@@ -27,7 +29,7 @@
       "userGid": "1000"
     }
   },
-  "postCreateCommand": "dnf install -y gcc-c++ make ffmpeg ffmpeg-devel && dnf clean all",
+  "postCreateCommand": "dnf install -y gcc-c++ make cmake ffmpeg ffmpeg-devel clang-tools-extra && dnf clean all",
   "remoteUser": "vscode",
   "updateRemoteUserUID": true,
   "mounts": [

@@ -1,6 +1,7 @@
 # Prerequisites
 *.d
 .vscode
+
 # Compiled Object files
 *.slo
 *.lo
@@ -30,10 +31,14 @@
 *.exe
 *.out
 *.app
+
+# Build output
 /output
+/build/
+
+# IDE
 /.qtcreator
 /.docker
-PKGBUILD
 
 # Devcontainer
 .devcontainer/.vscode
@@ -44,4 +49,10 @@ tests/*.mov
 tests/*.mkv
 tests/test_parser
 tests/test_validator
-tests/test_converter# Contributors
+tests/test_converter
+
+# AUR (separate repo)
+PKGBUILD
+
+# CMake
+CMakeUserPresets.json

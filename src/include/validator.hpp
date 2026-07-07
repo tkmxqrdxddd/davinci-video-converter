@@ -2,8 +2,9 @@
 #define VALIDATOR_HPP
 
 #include "config.hpp"
+#include <optional>
 #include <string>
 
-bool validate_config(const Config& config, std::string& error);
+std::optional<std::string> validate_config(const Config& config);
 
 #endif // VALIDATOR_HPP

@@ -3,13 +3,17 @@
 
 #include <string>
 
+enum class Codec { h264, h265, prores };
+enum class Quality { fast, medium, slow };
+
 struct Config {
     std::string input_path;
     std::string output_path;
-    std::string codec = "h264";
-    std::string quality = "medium";
+    Codec codec = Codec::h264;
+    Quality quality = Quality::medium;
     int crf = 23;
     bool verbose = false;
+    bool overwrite = false;
 };
 
 #endif // CONFIG_HPP
