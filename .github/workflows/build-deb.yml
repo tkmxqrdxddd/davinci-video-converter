@@ -24,18 +24,15 @@ jobs:
     - name: Install Dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y build-essential ffmpeg devscripts debhelper
+        sudo apt-get install -y build-essential cmake ffmpeg devscripts debhelper
 
-    - name: Build
-      run: make
-
-    - name: Create test input file
+    - name: Build and Test
       run: |
+        cmake -DCMAKE_BUILD_TYPE=Release -B build
+        cmake --build build
         mkdir -p tests
         ffmpeg -f lavfi -i testsrc=duration=1:size=128x72:rate=1 -c:v libx264 -t 1 tests/input.mp4 -y 2>/dev/null || touch tests/input.mp4
-
-    - name: Run Tests
-      run: make test
+        ctest --test-dir build
 
     - name: Create DEB directory structure
       run: |
@@ -60,7 +57,7 @@ jobs:
 
     - name: Copy binary and documentation
       run: |
-        cp davinci-video-converter debian/usr/bin/
+        cp build/davinci-video-converter debian/usr/bin/
         cp README.md debian/usr/share/doc/davinci-video-converter/
         cp LICENSE debian/usr/share/doc/davinci-video-converter/
 
