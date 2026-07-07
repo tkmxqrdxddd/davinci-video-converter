@@ -64,9 +64,9 @@ static std::vector<std::string> build_ffmpeg_args(const Config& config) {
 
 std::string build_ffmpeg_command(const Config& config) {
     std::ostringstream cmd;
-    cmd << "ffmpeg -i \"" << config.input_path << "\""
-        << " -c:v " << codec_to_ffmpeg(config.codec) << " -preset "
-        << quality_to_preset(config.quality) << " -crf " << config.crf << " -c:a copy";
+    cmd << "ffmpeg -i \"" << config.input_path << "\" -c:v " << codec_to_ffmpeg(config.codec)
+        << " -preset " << quality_to_preset(config.quality) << " -crf " << config.crf
+        << " -c:a copy";
 
     if (config.verbose) {
         cmd << " -loglevel verbose";
